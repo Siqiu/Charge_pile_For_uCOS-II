@@ -10,10 +10,23 @@
 #ifndef __MODULE_UART_H__
 #define __MODULE_UART_H__
 #include "lpc17xx_uart.h"
+#include "includes.h"
 
+/* buffer size definition */
+#define UART_RING_BUFSIZE 256
+/** @brief UART Ring buffer structure */
+typedef struct
+{
+    __IO uint32_t tx_head;                /*!< UART Tx ring buffer head index */
+    __IO uint32_t tx_tail;                /*!< UART Tx ring buffer tail index */
+    __IO uint32_t rx_head;                /*!< UART Rx ring buffer head index */
+    __IO uint32_t rx_tail;                /*!< UART Rx ring buffer tail index */
+    __IO uint8_t  tx[UART_RING_BUFSIZE];  /*!< UART Tx data ring buffer */
+    __IO uint8_t  rx[UART_RING_BUFSIZE];  /*!< UART Rx data ring buffer */
+} UART_RING_BUFFER_T;
 
-#define ENABLE_485      LPC_GPIO0->FIOCLR =  (1<<26);         /* 485_DIR = 1 enable send*/
-#define DISENABLE_485   LPC_GPIO0->FIOSET =  (1<<26);          /* 485_DIR = 1 enable Rec*/
+#define SEND_485    FIO_ByteClearValue(0, 3, CON_485);//LPC_GPIO0->FIOCLR =  (1<<26);   /* 485_DIR = 1 enable send*/
+#define RECV_485    FIO_ByteSetValue(0, 3,   CON_485);//LPC_GPIO0->FIOSET =  (1<<26);   /* 485_DIR = 1 enable Rec*/
 
 void UART0_Init(uint32_t BPS);
 void UART2_Init(uint32_t BPS);

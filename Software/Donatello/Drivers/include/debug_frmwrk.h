@@ -55,7 +55,7 @@
 #define _DG			_db_get_char(DEBUG_UART_PORT)
 //void  _printf (const  char *format, ...);
 
-extern void (*_db_msg)(LPC_UART_TypeDef *UARTx, const void *s);
+extern void (*_db_msg)(LPC_UART_TypeDef *UARTx, const uint8_t *s);
 extern void (*_db_msg_)(LPC_UART_TypeDef *UARTx, const void *s);
 extern void (*_db_char)(LPC_UART_TypeDef *UARTx, uint8_t ch);
 extern void (*_db_dec)(LPC_UART_TypeDef *UARTx, uint8_t decn);
@@ -66,8 +66,9 @@ extern void (*_db_hex_16)(LPC_UART_TypeDef *UARTx, uint16_t hexn);
 extern void (*_db_hex_32)(LPC_UART_TypeDef *UARTx, uint32_t hexn);
 extern uint8_t (*_db_get_char)(LPC_UART_TypeDef *UARTx);
 
+void UART_Puts(LPC_UART_TypeDef *UARTx, const uint8_t *str, uint16_t len);
 void UARTPutChar (LPC_UART_TypeDef *UARTx, uint8_t ch);
-void UARTPuts(LPC_UART_TypeDef *UARTx, const void *str);
+void UARTPuts(LPC_UART_TypeDef *UARTx, const uint8_t *str);
 void UARTPuts_(LPC_UART_TypeDef *UARTx, const void *str);
 void UARTPutDec(LPC_UART_TypeDef *UARTx, uint8_t decnum);
 void UARTPutDec16(LPC_UART_TypeDef *UARTx, uint16_t decnum);

@@ -539,7 +539,6 @@ uint32_t UART_Send(LPC_UART_TypeDef *UARTx, uint8_t *txbuf,
 	uint8_t *pChar = txbuf;
 
 	bToSend = buflen;
-
 	// blocking mode
 	if (flag == BLOCKING) {
 		bSent = 0;

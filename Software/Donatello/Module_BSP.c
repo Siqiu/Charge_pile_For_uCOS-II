@@ -35,10 +35,19 @@ void SysTick_Handler (void) {
  * @return 		None
  **********************************************************************/
 void Delay (unsigned long tick) {
-  unsigned long systickcnt;
-
-  systickcnt = SysTickCnt;
-  while ((SysTickCnt - systickcnt) < tick);
+#if 0
+    unsigned long systickcnt;
+    
+    systickcnt = SysTickCnt;
+    while ((SysTickCnt - systickcnt) < tick);
+#else
+    uint32_t i;
+    i = 0;
+    while (tick--) 
+	{
+        for (i = 0; i < 5000; i++);
+    }
+#endif
 }
 
 
@@ -46,12 +55,11 @@ void bsp_init(void)
 {
     //SysTick_Config(SystemCoreClock/1000 - 1); /* Generate interrupt each 1 ms   */
 //    RTCInit();                                          /* RTC初始化 */	
-
-    CAN1_Init();
-    
+    GPIO_Config();                                       /* GPIO contorl */
+    CAN1_Init(20000);
     TIMER_Init(100);
     UART0_Init(9600);                                    /* wzx 485 */
     UART2_Init(9600);                                    /* wzx DWIN */
     UART3_Init(9600);                                    /* wzx CARD */
-    LED_config();                                        /* LED contorl */
+    RECV_485;
 }

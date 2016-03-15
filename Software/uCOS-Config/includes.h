@@ -96,8 +96,11 @@
 #include "Module_LED.h"
 #include "Module_can.h"
 #include "lpc17xx_can.h"
+#include "lpc17xx_gpio.h"
 
+#include "Module_protocol.h"
 #include "Module_timer.h"
+#include "datstr.h"
 /*
 *********************************************************************************************************
 *                                                 TCP-IP

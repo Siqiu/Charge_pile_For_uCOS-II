@@ -18,6 +18,7 @@
 extern uint16_t timer_cnt;
 extern uint16_t Uart0_Inter;
 extern uint32_t uart0_flag;           //接收数据标志
+extern UART_RING_BUFFER_T rb;
 uint16_t timer_cnt_old = 0;
 uint16_t timer_cnt_new = 0;
 //timer init
@@ -34,11 +35,10 @@ void TIMER0_IRQHandler(void)
 	if (TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT)== SET){
         timer_cnt++;
 	}
-    if(uart0_flag != 0 & timer_cnt_old == 0){//收到数据
+    if(rb.rx_head != 0 & timer_cnt_old == 0){//收到数据
         timer_cnt_old = timer_cnt;
     }
     if((timer_cnt>(timer_cnt_old+30)) & (timer_cnt_old != 0)){
-        uart0_flag = 0;
         timer_cnt_old = 0;
         Uart0_Inter = 1;
     }

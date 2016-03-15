@@ -51,7 +51,6 @@
 *********************************************************************************************************
 */
 
-static  OS_STK  App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE];
 
 
 /*
@@ -60,15 +59,13 @@ static  OS_STK  App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE];
 *********************************************************************************************************
 */
 
-static  void  App_ObjCreate          (void);
-static  void  App_TaskCreate         (void);
-
-static  void  App_TaskStart          (void       *p_arg);
 /* Example group ----------------------------------------------------------- */
 /** @defgroup TIMER_Polling_Match	Polling_Match
  * @ingroup TIMER_Examples
  * @{
  */
+static void Task_Start(void *pdata);
+extern uint8_t     uart0_buf[64];      //接收缓冲区
 extern CAN_MSG_Type TXMsg, RXMsg; // messages for test Bypass mode
 /************************** PRIVATE VARIABLES *************************/
 uint8_t menu1[] =
@@ -81,144 +78,229 @@ uint8_t menu1[] =
 " Use timer 0 in polling mode \n\r"
 " Toggle MAT0.0 at frequency 10Hz \n\r"
 "********************************************************************************\n\r";
+uint16_t timer_cnt = 0;
+    int num = 0;
 
 
 /*
 *********************************************************************************************************
-*                                                main()
-*
-* Description : This is the standard entry point for C code.  It is assumed that your code will call
-*               main() once you have performed all necessary initialization.
-*
-* Argument(s) : none.
-*
-* Return(s)   : none.
-*
-* Caller(s)   : This the main standard entry point.
-*
-* Note(s)     : none.
+*                                       声明任务堆栈
 *********************************************************************************************************
 */
-uint16_t timer_cnt = 0;
+OS_STK  STK_START[TASK_0_STK_SIZE];
 
-uint16_t Uart0_Inter = 0;
-int  main (void)
+OS_STK  STK_APP_01[TASK_1_STK_SIZE];
+OS_STK  STK_APP_02[TASK_2_STK_SIZE];
+OS_STK  STK_APP_03[TASK_3_STK_SIZE];
+OS_STK  STK_APP_04[TASK_4_STK_SIZE];
+/*******************************************************************************
+  * @函数名称		Task_MBOX
+  * @函数说明		喂看门狗和解析数据
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+void Task_APP_01(void *pdata)
+{
+#if OS_CRITICAL_METHOD == 3
+    OS_CPU_SR cpu_sr;
+#endif
+    OS_ENTER_CRITICAL();
+    OS_EXIT_CRITICAL();
+    pdata = pdata;
+    for(;;)
+    {
+        //OS_ENTER_CRITICAL();
+
+        //WDOG_Refresh();
+
+        //OS_EXIT_CRITICAL();
+
+        UardDmaFlow();
+        
+
+        OSTimeDlyHMSM(0, 0, 0, 10);
+    }
+}
+/*
+*********************************************************************************************************
+*                                      CREATE APPLICATION TASKS
+*
+* Description:  This function creates the application tasks.
+*
+* Arguments  :  none
+*
+* Returns    :  none
+*********************************************************************************************************
+*/
+/*******************************************************************************
+  * @函数名称		Task_APP_02
+  * @函数说明		SHELL
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+void Task_APP_02(void *pdata)
 {
 
-    //CPU_Init();
+    pdata=pdata;
+    for(;;)
+    {
+//         SEND_485;
+//         UART_Send(LPC_UART0, (uint8_t *)ReadVol, sizeof(ReadVol), BLOCKING);
+//         //OSTimeDlyHMSM(0, 0, 0, 50);
+//         RECV_485;
+        if(num)
+        {
+            num--;
+            ReadData(ReadVol,16);
+        }
+//        ReadData(ReadVol,16);
+//        OSTimeDlyHMSM(0, 0, 2, 0);
+//        ReadData(ReadCur,16);
+//        OSTimeDlyHMSM(0, 0, 3, 0);
+//        ReadData(ReadEng,16);
+//        OSTimeDlyHMSM(0, 0, 4, 0);
+//        printf("%d\n",timer_cnt);
+        
+        FIO_ByteSetValue(2, 0, P02_06);
+        OSTimeDlyHMSM(0, 0, 0, 500);
+        FIO_ByteClearValue(2, 0, P02_06);
+        OSTimeDlyHMSM(0, 0, 0, 500);
+        
 
-    //BSP_Init();                                                 /* Initialize BSP functions                             */
-    bsp_init();
-    
-    OSInit();                                                   /* Initialize "uC/OS-II, The Real-Time Kernel"          */
-
-    OSTaskCreateExt((void (*)(void *))App_TaskStart,            /* Create the start task                                */
-                    (void          *)0,
-                    (OS_STK        *)&App_TaskStartStk[APP_CFG_TASK_START_STK_SIZE - 1],
-                    (INT8U          )APP_CFG_TASK_START_PRIO,
-                    (INT16U         )APP_CFG_TASK_START_PRIO,
-                    (OS_STK        *)&App_TaskStartStk[0],
-                    (INT32U         )APP_CFG_TASK_START_STK_SIZE,
-                    (void          *)0,
-                    (INT16U         )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-
-
-    OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II).  */
-
-    return(1);
+        OSTimeDlyHMSM(0, 0, 0, 500);
+    }
 }
 
-/*
-*********************************************************************************************************
-*                                          App_TaskStart()
-*
-* Description : This is an example of a startup task.  As mentioned in the book's text, you MUST
-*               initialize the ticker only once multitasking has started.
-*
-* Argument(s) : p_arg   is the argument passed to 'App_TaskStart()' by 'OSTaskCreate()'.
-*
-* Return(s)   : none.
-*
-* Caller(s)   : This is a task.
-*
-* Notes       : (1) The first line of code is used to prevent a compiler warning because 'p_arg' is not
-*                   used.  The compiler should not generate any code for this statement.
-*********************************************************************************************************
-*/
-
-static  void  App_TaskStart (void *p_arg)
+/*******************************************************************************
+  * @函数名称		Task_APP_03
+  * @函数说明		充电机充电桩发送任务
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+void Task_APP_03(void *pdata)
 {
+    pdata = pdata;
 
-    (void)p_arg;                                                /* See Note #1                                          */
+    OSStatInit();                   											/* 统计任务初始化 */
 
+    for(;;)
+    {
+        OSTimeDlyHMSM(0, 0, 2, 0);
+    }
+}
 
-    BSP_Start();                                                /* Start BSP and tick initialization                    */
-
-#if (OS_TASK_STAT_EN > 0)
-    OSStatInit();                                               /* Determine CPU capacity                               */
-#endif
-
-
-    App_ObjCreate();                                            /* Create Applicaiton kernel objects                    */
-
-    App_TaskCreate();                                           /* Create Application tasks                             */
-    
-    while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+/*******************************************************************************
+  * @函数名称		Task_APP_04
+  * @函数说明		无
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+void Task_APP_04(void *pdata)
+{
+    pdata = pdata;
+    for(;;)
+    {
         CAN_SendMsg(LPC_CAN1, &TXMsg);
-        UARTPuts (LPC_UART0,"Match interrupt occur..\r\naaa");
-        UARTPuts (LPC_UART2, menu1);
-        UARTPuts (LPC_UART3, menu1);
-        LED_RED();
+//        UARTPuts (LPC_UART0,"Match interrupt occur..\r\naaa");
+//        UARTPuts (LPC_UART2, menu1);
+//        UARTPuts (LPC_UART3, menu1);
+
+        LED_Red();
         printf("%d\n",timer_cnt);
         OSTimeDlyHMSM(0, 0, 1, 0);
         printf("%d\n",timer_cnt);
-        LED_GREEN();
+        LED_Green();
         OSTimeDlyHMSM(0, 0, 1, 0);
-        LED_BLUE();
+        LED_Blue();
+        OSTimeDlyHMSM(0, 0, 1, 0);
+    }
+}
+
+/*******************************************************************************
+  * @函数名称		Task_Family_Energy_Storage
+  * @函数说明		家庭储能2.5°电项目
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+void Task_Family_Energy_Storage(void *pdata)
+{
+    pdata = pdata;
+    for(;;)
+    {
         OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
 
 
-/*
-*********************************************************************************************************
-*                                      App_ObjCreate()
-*
-* Description:  Creates the application kernel objects.
-*
-* Argument(s) :  none.
-*
-* Return(s)   :  none.
-*
-* Caller(s)   :  App_TaskStart().
-*
-* Note(s)     :  none.
-*********************************************************************************************************
-*/
-
-static  void  App_ObjCreate (void)
+uint16_t Uart0_Inter = 0;
+int  main (void)
 {
+    //CPU_Init();
+
+    //BSP_Init();                                                 /* Initialize BSP functions                             */
+    bsp_init();
+
+    OSInit();                                                   /* Initialize "uC/OS-II, The Real-Time Kernel"          */
+
+    OSTaskCreate(Task_Start,(void *)0,
+                 &STK_START[TASK_0_STK_SIZE-1],
+                 PRIO_START);
+
+    OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II).  */
+
+    return(1);
 }
-
-
-/*
-*********************************************************************************************************
-*                                      App_TaskCreate()
-*
-* Description :  This function creates the application tasks.
-*
-* Argument(s) :  none.
-*
-* Return(s)   :  none.
-*
-* Caller(s)   :  App_TaskStart().
-*
-* Note(s)     :  none.
-*********************************************************************************************************
-*/
-
-static  void  App_TaskCreate (void)
+/*******************************************************************************
+  * @函数名称		AppStartTask
+  * @函数说明		起始任务，创建完其他任务后，自身挂起
+  * @输入参数		无
+  * @输出参数		无
+  * @返回参数		无
+*******************************************************************************/
+static void Task_Start(void *pdata)
 {
+#if OS_CRITICAL_METHOD == 3
+    OS_CPU_SR cpu_sr;
+#endif
+    OS_ENTER_CRITICAL();
+
+    pdata = pdata;
+    BSP_Start();                                                /* Start BSP and tick initialization                    */
+
+    uint8_t	err;                                                                //错误信息
+#if 1
+    OSTaskCreate(Task_APP_01,(void *)0,
+                 &STK_APP_01[TASK_1_STK_SIZE-1],
+                 PRIO_APP_01);
+    OSTaskNameSet(PRIO_APP_01, (uint8_t*)"UardDmaFlow",&err);
+#endif
+#if 1
+    OSTaskCreate(Task_APP_02,(void *)0,
+                 &STK_APP_02[TASK_2_STK_SIZE-1],
+                 PRIO_APP_02);
+    OSTaskNameSet(PRIO_APP_02, (uint8_t*)"SHEEL",&err);
+#endif
+#if 1
+    //充电机充电桩发送任务
+    OSTaskCreate(Task_APP_03,(void *)0,
+                 &STK_APP_03[TASK_3_STK_SIZE-1],
+                 PRIO_APP_03);
+    OSTaskNameSet(PRIO_APP_03, (uint8_t*)"Can_Post",&err);
+#endif
+#if 1
+    OSTaskCreate(Task_APP_04,(void *)0,
+                 &STK_APP_04[TASK_4_STK_SIZE-1],
+                 PRIO_APP_04);
+    OSTaskNameSet(PRIO_APP_04, (uint8_t*)"Time_to_one",&err);
+#endif
+    //挂起起始任务.
+    OSTaskSuspend(PRIO_START);
+    OS_EXIT_CRITICAL();
 }
 #ifdef  DEBUG
 /*******************************************************************************

@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1055753325
+Checksum=-1888877283
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -23,9 +23,9 @@ CStepIntDis=_ 0
 OverrideDefaultClocks=0
 CpuClock=72000000
 ClockAutoDetect=0
-ClockWanted=2000000
-JtagSpeed=2000000
-Prescaler=36
+ClockWanted=500000
+JtagSpeed=500000
+Prescaler=144
 TimeStampPrescIndex=0
 TimeStampPrescData=0
 PcSampCYCTAP=1
@@ -36,8 +36,6 @@ ITMportsEnable=0
 ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
-[array_types]
-Fmt0=uint8_t[64]	4	0
 [SWOTraceWindow]
 PcSampling=0
 InterruptLogs=0
@@ -76,6 +74,16 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 SumSortOrder=0
+[PowerProbe]
+Frequency=10000
+Probe0=I0
+ProbeSetup0=2 1 1 2 0 0
+[array_types]
+Fmt0=char[16]	4	0
+Fmt1=uint8_t[64]	4	0
+Fmt2=unsigned char[256]	4	0
+[watch_formats]
+Fmt0={W}1:0x58a8	4	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -85,20 +93,16 @@ LoggingEnabled=_ 0
 LogFile=_ ""
 [CallStackLog]
 Enabled=0
-[PowerProbe]
-Frequency=10000
-Probe0=I0
-ProbeSetup0=2 1 1 2 0 0
 [DriverProfiling]
 Enabled=0
-Mode=3
+Mode=0
 Graph=0
 Symbiont=0
 Exclusions=
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\..\uC-CSP\MCU\NXP\LPC17xx\csp_int.c}.646.5" 0 0 1 "" 0 "" 0
+Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.166.9" 0 0 1 "" 0 "" 0
 Count=1
 [Aliases]
 A0=_ "E:\BMS\±¦Âí\Micrium\Software\uCOS-II\Ports\ARM-Cortex-M3\Generic\IAR\os_cpu_a.asm" ""

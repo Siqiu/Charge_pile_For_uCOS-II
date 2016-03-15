@@ -71,7 +71,7 @@ void CAN_InitMessage(void) {
 	RXMsg.dataA[0] = RXMsg.dataA[1] = RXMsg.dataA[2] = RXMsg.dataA[3] = 0x00000000;
 	RXMsg.dataB[0] = RXMsg.dataB[1] = RXMsg.dataB[2] = RXMsg.dataB[3] = 0x00000000;
 }
-void CAN1_Init(void)
+void CAN1_Init(uint32_t BPS)
 {
 	/* Pin configuration
 	 * CAN1: select P0.0 as RD1. P0.1 as TD1
@@ -87,7 +87,7 @@ void CAN1_Init(void)
 	PINSEL_ConfigPin(&PinCfg);
 
 	//Initialize CAN1
-	CAN_Init(LPC_CAN1, 20000);
+	CAN_Init(LPC_CAN1, BPS);
     
 	//Enable Interrupt
 	CAN_IRQCmd(LPC_CAN1, CANINT_RIE, ENABLE);
@@ -99,7 +99,7 @@ void CAN1_Init(void)
 	CAN_SetAFMode(LPC_CANAF,CAN_AccBP);
 	CAN_InitMessage();
 }
-void CAN2_Init(void)
+void CAN2_Init(uint32_t BPS)
 {
 	/* Pin configuration
 	 * CAN1: select P0.0 as RD1. P0.1 as TD1
@@ -115,7 +115,7 @@ void CAN2_Init(void)
 	PINSEL_ConfigPin(&PinCfg);
 
 	//Initialize CAN2
-	CAN_Init(LPC_CAN2, 125000);
+	CAN_Init(LPC_CAN2, BPS);
 
 	//Enable Interrupt
 	CAN_IRQCmd(LPC_CAN2, CANINT_RIE, ENABLE);

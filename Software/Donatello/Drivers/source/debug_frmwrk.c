@@ -45,7 +45,7 @@
 #ifdef _DBGFWK
 /* Debug framework */
 
-void (*_db_msg)(LPC_UART_TypeDef *UARTx, const void *s);
+void (*_db_msg)(LPC_UART_TypeDef *UARTx, const uint8_t *s);
 void (*_db_msg_)(LPC_UART_TypeDef *UARTx, const void *s);
 void (*_db_char)(LPC_UART_TypeDef *UARTx, uint8_t ch);
 void (*_db_dec)(LPC_UART_TypeDef *UARTx, uint8_t decn);
@@ -88,20 +88,32 @@ uint8_t UARTGetChar (LPC_UART_TypeDef *UARTx)
  * @param[in]	str 	string to put
  * @return		None
  **********************************************************************/
-void UARTPuts(LPC_UART_TypeDef *UARTx, const void *str)
+void UARTPuts(LPC_UART_TypeDef *UARTx, const uint8_t *str)
 {
-    if(UARTx==LPC_UART0) ENABLE_485;
-	uint8_t *s = (uint8_t *) str;
+    if(UARTx==LPC_UART0) SEND_485;
+	//uint8_t *s = (uint8_t *) str;
     
-	while (*s)
+	while (*str++)
 	{
-		UARTPutChar(UARTx, *s++);
+		UARTPutChar(UARTx, *str++);
 	}
     //Delay(3);
     OSTimeDlyHMSM(0, 0, 0, 30);
-    if(UARTx==LPC_UART0) DISENABLE_485;
+    if(UARTx==LPC_UART0) RECV_485;
 }
-
+void UART_Puts(LPC_UART_TypeDef *UARTx, const uint8_t *str, uint16_t len)
+{
+    if(UARTx==LPC_UART0) SEND_485;
+	//uint8_t *s = (uint8_t *) str;
+    
+	while (len--)
+	{
+		UARTPutChar(UARTx, *str++);
+	}
+    Delay(30);
+    //OSTimeDlyHMSM(0, 0, 0, 30);
+    if(UARTx==LPC_UART0) RECV_485;
+}
 
 /*********************************************************************//**
  * @brief		Puts a string to UART port and print new line

@@ -89,6 +89,9 @@
   <group>
     <name>APP</name>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\datstr.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Software\uCOS-Config\includes.h</name>
     </file>
     <file>
@@ -101,7 +104,13 @@
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_can.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_DLT.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_LED.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_timer.c</name>
@@ -130,6 +139,9 @@
         <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Drivers\source\lpc17xx_libcfg_default.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Drivers\source\lpc17xx_nvic.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Drivers\source\lpc17xx_pinsel.c</name>
       </file>
       <file>
@@ -155,7 +167,7 @@
       <name>$PROJ_DIR$\..\..\BSP\bsp.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\BSP\IAR\LPC1768_FLASH512K_SRAM32K.icf</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Core\Device\Include\LPC17xx.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Donatello\lpc17xx_libcfg.h</name>

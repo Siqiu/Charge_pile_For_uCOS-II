@@ -13,7 +13,6 @@
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_clkpwr.h"
 
-uint8_t     uart0_buf[64] = {0};      //接收缓冲区
 uint32_t    uart0_flag = 0;           //接收数据标志
 extern uint16_t timer_cnt;
 
@@ -25,50 +24,47 @@ extern uint16_t timer_cnt;
                                                                       /*  与FCCLK相同，或是其的偶数倍 */
 #define FPCLK                      (FCCLK / 4)                        /*  外设时钟频率,FCCLK的1/2、1/4*/
                                                                       /*  或与FCCLK相同               */
+__IO FlagStatus TxIntStat;
+extern UART_RING_BUFFER_T rb;
 void UART0_Init(uint32_t BPS)
 {
-#if 0
+#if 1
+	// UART Configuration structure variable
+	UART_CFG_Type UARTConfigStruct;
+	// UART FIFO configuration Struct variable
+	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
+	// Pin configuration for UART0
+	PINSEL_CFG_Type PinCfg;
+
+	__IO FlagStatus exitflag;
+
 	/*
 	 * Initialize UART0 pin connect
 	 */
-    PINSEL_CFG_Type PinCfg;
 	PinCfg.Funcnum = 1;
-	PinCfg.OpenDrain = 1;
+	PinCfg.OpenDrain = 0;
 	PinCfg.Pinmode = 0;
 	PinCfg.Pinnum = 2;
 	PinCfg.Portnum = 0;
 	PINSEL_ConfigPin(&PinCfg);
 	PinCfg.Pinnum = 3;
 	PINSEL_ConfigPin(&PinCfg);
-    
-    
+
+
 	/* Initialize UART Configuration parameter structure to default state:
 	 * Baudrate = 9600bps
 	 * 8 data bit
 	 * 1 Stop bit
 	 * None parity
-     * 默认的设置
 	 */
-    UART_CFG_Type UARTConfigStruct;
 	UART_ConfigStructInit(&UARTConfigStruct);
-
-    
-	// Re-configure baudrate to bps
-	UARTConfigStruct.Baud_rate = BPS;
-    
-    // Set parity is ODD
-    UARTConfigStruct.Parity = UART_PARITY_ODD;
-
-	// Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter
+    //Even parity
+    UARTConfigStruct.Parity = UART_PARITY_EVEN;
+	// Initialize UART0 peripheral with given to corresponding parameter
 	UART_Init((LPC_UART_TypeDef *)LPC_UART0, &UARTConfigStruct);
 
-	// Enable UART Transmit
-	UART_TxCmd((LPC_UART_TypeDef *)LPC_UART0, ENABLE);
-    
-    // UART FIFO configuration Struct variable
-	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
-    
-    /* Initialize FIFOConfigStruct to default state:
+
+	/* Initialize FIFOConfigStruct to default state:
 	 * 				- FIFO_DMAMode = DISABLE
 	 * 				- FIFO_Level = UART_FIFO_TRGLEV0
 	 * 				- FIFO_ResetRxBuf = ENABLE
@@ -86,11 +82,16 @@ void UART0_Init(uint32_t BPS)
 
     /* Enable UART Rx interrupt */
 	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0, UART_INTCFG_RBR, ENABLE);
-    
 	/* Enable UART line status interrupt */
 	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0, UART_INTCFG_RLS, ENABLE);
-    
-    NVIC_SetPriorityGrouping(4); //sets group priorities: 8 - subpriorities: 3
+	/*
+	 * Do not enable transmit interrupt here, since it is handled by
+	 * UART_Send() function, just to reset Tx Interrupt state for the
+	 * first time
+	 */
+//	TxIntStat = RESET;
+
+
     /* preemption = 1, sub-priority = 1 */
     NVIC_SetPriority(UART0_IRQn, ((0x01<<3)|0x01));
 	/* Enable Interrupt for UART0 channel */
@@ -327,18 +328,7 @@ void UART_IntErr(uint8_t bLSErrType)
  **********************************************************************/
 void UART0_IRQHandler(void)
 {
-#if 0
-    uint32_t flag;
-    uint8_t byte;
-    flag  = LPC_UART0->IIR;                                 /* 读取(清除)中断中断状态    */
-    flag &= 0x0F;
-    if((0X04 == flag)&&(LPC_UART0->LSR & 0X01) )           /* 如果是接收中断，并且有数据 */
-	{
-        byte=LPC_UART0->RBR;			                    /* 读取数据  */
-        uart0_buf[uart0_flag++] = byte;
-    }
-#else
-    	uint32_t intsrc, tmp, tmp1;
+	uint32_t intsrc, tmp, tmp1;
 
 	/* Determine the interrupt source */
 	intsrc = UART_GetIntId(LPC_UART0);
@@ -366,5 +356,4 @@ void UART0_IRQHandler(void)
 	if (tmp == UART_IIR_INTID_THRE){
 			UART_IntTransmit();
 	}
-#endif
 }

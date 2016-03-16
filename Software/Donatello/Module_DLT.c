@@ -13,6 +13,7 @@
 *********************************************************************************************************
 */
 #include "Module_DLT.h"
+
 DLTDat std;
 /* Public  functions ---------------------------------------------------------*/
 /*******************************************************************************
@@ -33,10 +34,51 @@ void DltStart(void)
   * @输出参数		无
   * @返回参数		无
 *******************************************************************************/
-void ReadData(const uint8_t * ptr,uint16_t len)
+void ReadData(DLT_ENUM dlt)
 {
     DltStart();
-    UART_Puts (LPC_UART0,ptr,len);
+    uint8_t data[16] = {0X68,0XAA,0XAA,0XAA,0XAA,0XAA,0XAA,0X68,0X11,0X04,0X33,0X34,0x34,0x35,0xB1,0x16};
+    uint16_t Send_len = 0;
+    switch(dlt)
+    {
+        case DLT_Vol://02 01 01 00
+            {
+                data[10] = 0x00 + 0x33;
+                data[11] = 0x01 + 0x33;
+                data[12] = 0x01 + 0x33;
+                data[13] = 0x02 + 0x33;
+                Send_len = 16;
+                break;
+            }
+        case DLT_Cur://02 02 01 00
+            {
+                data[10] = 0x00 + 0x33;
+                data[11] = 0x01 + 0x33;
+                data[12] = 0x02 + 0x33;
+                data[13] = 0x02 + 0x33;
+                Send_len = 16;
+                break;
+            }
+        case DLT_Eng://00 01 00 00
+            {
+                data[10] = 0x00 + 0x33;
+                data[11] = 0x00 + 0x33;
+                data[12] = 0x01 + 0x33;
+                data[13] = 0x00 + 0x33;
+                Send_len = 16;
+                break;
+            }
+        case DLT_Addr:
+            {
+                data[9]  = 0x13;
+                data[10] = 0x00;
+                Send_len = 12;
+                break;
+            }
+    }
+    data[Send_len] = 0x16;
+    data[Send_len-2] = crcCheck_MOD(data,Send_len-2);
+    UART_Puts (LPC_UART0,data,Send_len);
 }
 
 

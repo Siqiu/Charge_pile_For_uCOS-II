@@ -6,12 +6,6 @@ static uint8_t DwinWrite[8] = {0x5A,0xa5,0x05,0x82,0x00,0x00,0x00,0x00};
 static uint8_t DwinRead[7]  = {0x5A,0xa5,0x04,0x83,0x00,0x00,0x01};
 static uint8_t DLT_wakeup[4] ={0xfe,0xfe,0xfe,0xfe};
 
-/*****************************************电能表数据请求***********************************/
-const static char DReadAdd[12] = {0X68,0XAA,0XAA,0XAA,0XAA,0XAA,0XAA,0X68,0X13,0X00,0XDF,0X16};    // 请求获取电能表的通信地址
-const static char ReadVol[16]  = {0X68,0XAA,0XAA,0XAA,0XAA,0XAA,0XAA,0X68,0X11,0X04,0X33,0X34,0x34,0x35,0xB1,0x16};  //请求读取通过电能表的电压
-const static char ReadCur[16]  = {0X68,0XAA,0XAA,0XAA,0XAA,0XAA,0XAA,0X68,0X11,0X04,0X33,0X34,0x35,0x35,0xB2,0x16};  //请求读取通过流过电能表的电能
-const static char ReadEng[16]  = {0X68,0XAA,0XAA,0XAA,0XAA,0XAA,0XAA,0X68,0X11,0X04,0X33,0X33,0x34,0x33,0xAE,0x16};  //请求读取通过电能表的电能
-
 /**************************************迪文屏的数据请求***************************************/
 static uint8_t ReadAdd[6] = {0x5a,0xa5,0x03,0x81,0x03,0x02};            // 读取当前图片的地址
 static uint8_t ReadCash[7] = {0x5a,0xa5,0x04,0x83,0x00,0x5a,01};         //请求读取设置的押金

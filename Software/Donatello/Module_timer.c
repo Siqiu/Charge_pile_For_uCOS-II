@@ -32,6 +32,7 @@ TIM_MATCHCFG_Type TIM_MatchConfigStruct;
  **********************************************************************/
 void TIMER0_IRQHandler(void)
 {
+#if 0
 	if (TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT)== SET){
         timer_cnt++;
 	}
@@ -40,9 +41,27 @@ void TIMER0_IRQHandler(void)
     }
     if((timer_cnt>(timer_cnt_old+30)) & (timer_cnt_old != 0)){
         timer_cnt_old = 0;
+        timer_cnt = 0;
         Uart0_Inter = 1;
     }
 	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
+#else
+    if(rb.rx_head != 0){//收到数据
+        timer_cnt_old = rb.rx_head;
+        if (TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT)== SET){//收到数据开始计数
+            timer_cnt++;
+        }
+        if(timer_cnt >= 30){
+            if(timer_cnt_old == rb.rx_head){
+                timer_cnt_old = 0;
+                timer_cnt = 0;
+                Uart0_Inter = 1;
+            }
+            timer_cnt = 0;
+        }
+    }
+    TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
+#endif
 }
 
 void TIMER_Init(uint32_t Hz)

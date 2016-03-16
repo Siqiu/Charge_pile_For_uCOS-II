@@ -14,6 +14,6 @@
 
 
 void CAN1_Init(uint32_t BPS);
-void CAN1_Init(uint32_t BPS);
+void CAN2_Init(uint32_t BPS);
 
 #endif /* __MODULE_CAN_H__ */

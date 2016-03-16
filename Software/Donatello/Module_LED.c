@@ -21,7 +21,7 @@ void GPIO_Config(void)
     FIO_ByteClearValue(0, 3, CON_485);
     
     FIO_ByteSetDir(2, 0, P02_06, 1);
-    FIO_ByteClearValue(2, 0, P02_06);
+    //FIO_ByteClearValue(2, 0, P02_06);
 }
 void LED_Clear(void)
 {

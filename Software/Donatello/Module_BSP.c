@@ -50,7 +50,6 @@ void Delay (unsigned long tick) {
 #endif
 }
 
-
 void bsp_init(void)
 {
     //SysTick_Config(SystemCoreClock/1000 - 1); /* Generate interrupt each 1 ms   */

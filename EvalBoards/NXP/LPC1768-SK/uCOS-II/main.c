@@ -37,6 +37,7 @@
 
 #include <includes.h>
 #include "Module_BSP.h"
+#include "Module_DLT.h"
 
 /*
 *********************************************************************************************************
@@ -65,7 +66,6 @@
  * @{
  */
 static void Task_Start(void *pdata);
-extern uint8_t     uart0_buf[64];      //接收缓冲区
 extern CAN_MSG_Type TXMsg, RXMsg; // messages for test Bypass mode
 /************************** PRIVATE VARIABLES *************************/
 uint8_t menu1[] =
@@ -150,23 +150,34 @@ void Task_APP_02(void *pdata)
 //         UART_Send(LPC_UART0, (uint8_t *)ReadVol, sizeof(ReadVol), BLOCKING);
 //         //OSTimeDlyHMSM(0, 0, 0, 50);
 //         RECV_485;
-        if(num)
-        {
-            num--;
-            ReadData(ReadVol,16);
+//        if(num)
+//        {
+//            num--;
+//            ReadData(ReadVol,16);
+//        }
+
+        if(num == 1){
+            num -= 1;
+            ReadData(DLT_Vol);
+            OSTimeDlyHMSM(0, 0, 2, 0);
         }
-//        ReadData(ReadVol,16);
-//        OSTimeDlyHMSM(0, 0, 2, 0);
-//        ReadData(ReadCur,16);
-//        OSTimeDlyHMSM(0, 0, 3, 0);
-//        ReadData(ReadEng,16);
-//        OSTimeDlyHMSM(0, 0, 4, 0);
+        if(num == 2){
+            num -= 2;
+            ReadData(DLT_Cur);
+            OSTimeDlyHMSM(0, 0, 2, 0);
+        }
+        if(num == 3){
+            num -= 3;
+            ReadData(DLT_Eng);
+            OSTimeDlyHMSM(0, 0, 2, 0);
+        }
+
 //        printf("%d\n",timer_cnt);
-        
-        FIO_ByteSetValue(2, 0, P02_06);
-        OSTimeDlyHMSM(0, 0, 0, 500);
-        FIO_ByteClearValue(2, 0, P02_06);
-        OSTimeDlyHMSM(0, 0, 0, 500);
+
+//        FIO_ByteSetValue(2, 0, P02_06);
+//        OSTimeDlyHMSM(0, 0, 0, 500);
+//        FIO_ByteClearValue(2, 0, P02_06);
+//        OSTimeDlyHMSM(0, 0, 0, 500);
         
 
         OSTimeDlyHMSM(0, 0, 0, 500);

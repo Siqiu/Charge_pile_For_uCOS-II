@@ -104,6 +104,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_can.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_crc.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_DLT.c</name>
     </file>
     <file>

@@ -68,6 +68,24 @@ void ReadData(DLT_ENUM dlt)
                 Send_len = 16;
                 break;
             }
+        case DLT_YYMMDDWW://04 00 01 01
+            {
+                data[10] = 0x01 + 0x33;
+                data[11] = 0x01 + 0x33;
+                data[12] = 0x00 + 0x33;
+                data[13] = 0x04 + 0x33;
+                Send_len = 16;
+                break;
+            }
+        case DLT_hhmmss://04 00 01 02
+            {
+                data[10] = 0x02 + 0x33;
+                data[11] = 0x01 + 0x33;
+                data[12] = 0x00 + 0x33;
+                data[13] = 0x04 + 0x33;
+                Send_len = 16;
+                break;
+            }
         case DLT_Addr:
             {
                 data[9]  = 0x13;
@@ -77,7 +95,7 @@ void ReadData(DLT_ENUM dlt)
             }
     }
     data[Send_len] = 0x16;
-    data[Send_len-2] = crcCheck_MOD(data,Send_len-2);
+    data[Send_len-2] = CrcCheck_MOD(data,Send_len-2);
     UART_Puts (LPC_UART0,data,Send_len);
 }
 

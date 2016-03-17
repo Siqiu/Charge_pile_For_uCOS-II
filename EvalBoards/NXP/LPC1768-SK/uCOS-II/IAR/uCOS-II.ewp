@@ -990,6 +990,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_RFID.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_timer.c</name>
     </file>
     <file>

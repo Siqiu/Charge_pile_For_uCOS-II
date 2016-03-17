@@ -17,6 +17,8 @@ typedef struct
 	int16_t Val[2];
 	uint16_t Cur[2];
 	int16_t Elenergy[4];
+    uint16_t YYMMDDWW[4];
+    uint16_t hhmmss[3];
 }DLTDat;
 
 typedef enum {
@@ -24,8 +26,8 @@ typedef enum {
 	DLT_Cur,		    	/* (1) A相电流 */
 	DLT_Eng,			    /* (2) 正向有功总电能 */
 	DLT_Addr,			    /* (3) The physical drive cannot work */
-//	PW_OPERATIONCODE_ERR,	/* (4) Could not find the file */
-//	PW_NO_PATH,				/* (5) Could not find the path */
+	DLT_YYMMDDWW,           /* (4) YYMMDDWW */
+	DLT_hhmmss,				/* (5) hhmmss */
 //	PW_INVALID_NAME,		/* (6) The path name format is invalid */
 //	PW_DENIED,				/* (7) Access denied due to prohibited access or directory full */
 //	PW_EXIST,				/* (8) Access denied due to prohibited access */

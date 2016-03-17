@@ -171,6 +171,16 @@ void Task_APP_02(void *pdata)
             ReadData(DLT_Eng);
             OSTimeDlyHMSM(0, 0, 2, 0);
         }
+        if(num == 4){
+            num -= 4;
+            ReadData(DLT_YYMMDDWW);
+            OSTimeDlyHMSM(0, 0, 2, 0);
+        }
+        if(num == 5){
+            num -= 5;
+            ReadData(DLT_hhmmss);
+            OSTimeDlyHMSM(0, 0, 2, 0);
+        }
 
 //        printf("%d\n",timer_cnt);
 

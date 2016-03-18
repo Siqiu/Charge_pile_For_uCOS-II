@@ -10,6 +10,8 @@
 #ifndef   __MODULE_RFID_H__
 #define   __MODULE_RFID_H__
 
+#include "Module_crc.h"
+
 /* Exported valable -------------------------------------------------------- */
 typedef enum {
 	OP_OK = 0,            /* (0)  函数调用成功 */
@@ -33,22 +35,22 @@ typedef enum {
 	OP_CMDERR             /* (42) Commend error */
 } RFID_ERRNUM;
 
-typedef enum {
-    Cmd_R_HWVersion = 0x4F, /* (1) Read hardware version */
-    Cmd_Load_Key    = 0x4C, /* (2) Download password to card reader */
-    Cmd_Request     = 0x41, /* (3) Find card request */
-    Cmd_Anticoll    = 0x42, /* (4) 防冲突 */
-    Cmd_Select      = 0x43, /* (5) Select card */
-    Cmd_Authentic   = 0x44, /* (6) Check password */
-    Cmd_Halt        = 0x45, /* (7) Stop card */
-    Cmd_R_Block     = 0x46, /* (8) Read a block */
-    Cmd_W_Block     = 0x47, /* (9) Write a block */
-    Cmd_A_Money     = 0x48, /* (10) Add money */
-    Cmd_L_Money     = 0x49, /* (11) Less money */
-    Cmd_Transfer    = 0x4B  /* (12) Money operation */
-} RFID_DATATYPE;
+//typedef enum {
+#define Cmd_R_HWVersion 0x4F /* (1) Read hardware version */
+#define Cmd_Load_Key    0x4C /* (2) Download password to card reader */
+#define Cmd_Request     0x41 /* (3) Find card request */
+#define Cmd_Anticoll    0x42 /* (4) 防冲突 */
+#define Cmd_Select      0x43 /* (5) Select card */
+#define Cmd_Authentic   0x44 /* (6) Check password */
+#define Cmd_Halt        0x45 /* (7) Stop card */
+#define Cmd_R_Block     0x46 /* (8) Read a block */
+#define Cmd_W_Block     0x47 /* (9) Write a block */
+#define Cmd_A_Money     0x48 /* (10) Add money */
+#define Cmd_L_Money     0x49 /* (11) Less money */
+    //Cmd_Transfer    = 0x4B  /* (12) Money operation */
+//} RFID_DATATYPE;
 /* Public functions ---------------------------------------------------------*/
-
+//void RFID_Send(RFID_DATATYPE cmd);
 /* private functions---------------------------------------------------------*/
 
 #endif	/* __MODULE_RFID_H__ */

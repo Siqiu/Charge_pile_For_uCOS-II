@@ -31,6 +31,7 @@
 
 #include "debug_frmwrk.h"
 #include "lpc17xx_pinsel.h"
+#include "Module_BSP.h"
 
 /* If this source file built with example, the LPC17xx FW library configuration
  * file in each example directory ("lpc17xx_libcfg.h") must be included,
@@ -91,20 +92,20 @@ uint8_t UARTGetChar (LPC_UART_TypeDef *UARTx)
 void UARTPuts(LPC_UART_TypeDef *UARTx, const uint8_t *str)
 {
     if(UARTx==LPC_UART0) SEND_485;
-	//uint8_t *s = (uint8_t *) str;
     
 	while (*str++)
 	{
-		UARTPutChar(UARTx, *str++);
+		UARTPutChar(UARTx, *str);
 	}
-    //Delay(3);
-    OSTimeDlyHMSM(0, 0, 0, 30);
-    if(UARTx==LPC_UART0) RECV_485;
+    
+    if(UARTx==LPC_UART0){
+        Delay(30);
+        RECV_485;
+    }
 }
 void UART_Puts(LPC_UART_TypeDef *UARTx, const uint8_t *str, uint16_t len)
 {
     if(UARTx==LPC_UART0) SEND_485;
-	//uint8_t *s = (uint8_t *) str;
     
 	while (len--)
 	{

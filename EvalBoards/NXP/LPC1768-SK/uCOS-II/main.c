@@ -38,6 +38,7 @@
 #include <includes.h>
 #include "Module_BSP.h"
 #include "Module_DLT.h"
+#include "Module_RFID.h"
 
 /*
 *********************************************************************************************************
@@ -146,16 +147,7 @@ void Task_APP_02(void *pdata)
     pdata=pdata;
     for(;;)
     {
-//         SEND_485;
-//         UART_Send(LPC_UART0, (uint8_t *)ReadVol, sizeof(ReadVol), BLOCKING);
-//         //OSTimeDlyHMSM(0, 0, 0, 50);
-//         RECV_485;
-//        if(num)
-//        {
-//            num--;
-//            ReadData(ReadVol,16);
-//        }
-
+#if 0//test DLT
         if(num == 1){
             num -= 1;
             ReadData(DLT_Vol);
@@ -181,7 +173,11 @@ void Task_APP_02(void *pdata)
             ReadData(DLT_hhmmss);
             OSTimeDlyHMSM(0, 0, 2, 0);
         }
-
+#endif
+        //UARTPuts (LPC_UART3, menu1);
+        uint8_t buf1[8] = {0x01, 0x14, 0x8a, 0xc5, 0xe2, 0x28, 0x28, 0x00};
+        uint8_t buf2[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x40};
+        RFID_Send(Cmd_Load_Key, &buf1, &buf2);
 //        printf("%d\n",timer_cnt);
 
 //        FIO_ByteSetValue(2, 0, P02_06);
@@ -190,7 +186,7 @@ void Task_APP_02(void *pdata)
 //        OSTimeDlyHMSM(0, 0, 0, 500);
         
 
-        OSTimeDlyHMSM(0, 0, 0, 500);
+        OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
 
@@ -201,6 +197,22 @@ void Task_APP_02(void *pdata)
   * @输出参数		无
   * @返回参数		无
 *******************************************************************************/
+//int sumi(int c, ...)
+//{
+//    va_list argptr;
+//    va_start(argptr, c); //初始化变元指针
+//    int sum = c;
+//    c = va_arg(argptr, int); //作为下一个参数类型的参数类型，返回不定参数
+//    //c保存第一个不定参数
+//    printf("%d\n", c);
+//    while(0 != c) //末尾特定字符指示结束
+//    {
+//        sum = sum + c;
+//        c = va_arg(argptr, int);
+//    }
+//    va_end(argptr);
+//    return sum;
+//}
 void Task_APP_03(void *pdata)
 {
     pdata = pdata;
@@ -209,6 +221,7 @@ void Task_APP_03(void *pdata)
 
     for(;;)
     {
+//        sumi(1,2,3,4,5);
         OSTimeDlyHMSM(0, 0, 2, 0);
     }
 }

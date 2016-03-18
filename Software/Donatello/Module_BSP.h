@@ -13,6 +13,7 @@
 /* Exported valable -------------------------------------------------------- */
 /* Public functions ---------------------------------------------------------*/
 void bsp_init(void);
+void Delay (unsigned long tick);
 /* private functions---------------------------------------------------------*/
 
 #endif	/* __MODULE_BSP_H__ */

@@ -17,13 +17,19 @@
 /** @brief UART Ring buffer structure */
 typedef struct
 {
-    __IO uint32_t tx_head;                /*!< UART Tx ring buffer head index */
-    __IO uint32_t tx_tail;                /*!< UART Tx ring buffer tail index */
-    __IO uint32_t rx_head;                /*!< UART Rx ring buffer head index */
-    __IO uint32_t rx_tail;                /*!< UART Rx ring buffer tail index */
-    __IO uint8_t  tx[UART_RING_BUFSIZE];  /*!< UART Tx data ring buffer */
-    __IO uint8_t  rx[UART_RING_BUFSIZE];  /*!< UART Rx data ring buffer */
+    /*__IO*/ uint32_t tx_head;                /*!< UART Tx ring buffer head index */
+    /*__IO*/ uint32_t tx_tail;                /*!< UART Tx ring buffer tail index */
+    /*__IO*/ uint32_t rx_head;                /*!< UART Rx ring buffer head index */
+    /*__IO*/ uint32_t rx_tail;                /*!< UART Rx ring buffer tail index */
+    /*__IO*/ uint8_t  tx[UART_RING_BUFSIZE];  /*!< UART Tx data ring buffer */
+    /*__IO*/ uint8_t  rx[UART_RING_BUFSIZE];  /*!< UART Rx data ring buffer */
 } UART_RING_BUFFER_T;
+
+/*!< UART 硬件模块号 */
+#define HW_UART0  (0x00U)  /* 芯片的UART0端口 */
+#define HW_UART1  (0x01U)
+#define HW_UART2  (0x02U)
+#define HW_UART3  (0x03U)
 
 #define SEND_485    FIO_ByteClearValue(0, 3, CON_485);//LPC_GPIO0->FIOCLR =  (1<<26);   /* 485_DIR = 1 enable send*/
 #define RECV_485    FIO_ByteSetValue(0, 3,   CON_485);//LPC_GPIO0->FIOSET =  (1<<26);   /* 485_DIR = 1 enable Rec*/

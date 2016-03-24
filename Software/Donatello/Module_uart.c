@@ -13,8 +13,30 @@
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_clkpwr.h"
 
-uint32_t    uart0_flag = 0;           //接收数据标志
-extern uint16_t timer_cnt;
+/************************** PUBLOC VARIABLES *************************/
+// UART Ring buffer
+UART_RING_BUFFER_T rb[3];
+extern uint16_t timer_cnt[3];
+uint16_t Uart_Inter[3];
+// Current Tx Interrupt enable state
+__IO FlagStatus TxIntStat;
+extern UART_RING_BUFFER_T rb[3];
+/************************** PRIVATE DEFINTIONS *************************/
+
+
+/* Buf mask */
+#define __BUF_MASK (UART_RING_BUFSIZE-1)
+/* Check buf is full or not */
+#define __BUF_IS_FULL(head, tail) ((tail&__BUF_MASK)==((head+1)&__BUF_MASK))
+/* Check buf will be full in next receiving or not */
+#define __BUF_WILL_FULL(head, tail) ((tail&__BUF_MASK)==((head+2)&__BUF_MASK))
+/* Check buf is empty */
+#define __BUF_IS_EMPTY(head, tail) ((head&__BUF_MASK)==(tail&__BUF_MASK))
+/* Reset buf */
+#define __BUF_RESET(bufidx)	(bufidx=0)
+#define __BUF_INCR(bufidx)	(bufidx=(bufidx+1)&__BUF_MASK)
+
+
 
 #define FOSC                        12000000                          /*  振荡器频率                  */
 
@@ -24,8 +46,7 @@ extern uint16_t timer_cnt;
                                                                       /*  与FCCLK相同，或是其的偶数倍 */
 #define FPCLK                      (FCCLK / 4)                        /*  外设时钟频率,FCCLK的1/2、1/4*/
                                                                       /*  或与FCCLK相同               */
-__IO FlagStatus TxIntStat;
-extern UART_RING_BUFFER_T rb;
+
 void UART0_Init(uint32_t BPS)
 {
 #if 1
@@ -151,7 +172,7 @@ void UART2_Init(uint32_t BPS)
 	// Enable UART Transmit
 	UART_TxCmd((LPC_UART_TypeDef *)LPC_UART2, ENABLE);
 }
-#if 1
+
 
 void UART3_Init (uint32_t UART3_BPS)
 {
@@ -174,94 +195,45 @@ void UART3_Init (uint32_t UART3_BPS)
     LPC_UART3->IER = 0x01;                          /* 使能接收中断                 */
 
 }
-#else
-void UART3_Init(uint32_t BPS)
-{
-    UART_CFG_Type UARTConfigStruct;
-	PINSEL_CFG_Type PinCfg;
-
-	/*
-	 * Initialize UART3 pin connect
-	 */
-	PinCfg.Funcnum = 1;
-	PinCfg.OpenDrain = 0;
-	PinCfg.Pinmode = 0;
-	PinCfg.Pinnum = 28;
-	PinCfg.Portnum = 4;
-	PINSEL_ConfigPin(&PinCfg);
-	PinCfg.Pinnum = 29;
-	PINSEL_ConfigPin(&PinCfg);
-	/* Initialize UART Configuration parameter structure to default state:
-	 * Baudrate = 9600bps
-	 * 8 data bit
-	 * 1 Stop bit
-	 * None parity
-	 */
-	UART_ConfigStructInit(&UARTConfigStruct);
-
-	// Re-configure baudrate to bps
-	UARTConfigStruct.Baud_rate = BPS;
-    
-    // Set parity is UART_PARITY_NONE
-    UARTConfigStruct.Parity = UART_PARITY_NONE;
-
-	// Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter
-	UART_Init((LPC_UART_TypeDef *)LPC_UART3, &UARTConfigStruct);
-
-	// Enable UART Transmit
-	UART_TxCmd((LPC_UART_TypeDef *)LPC_UART3, ENABLE);
-}
-#endif
-/************************** PRIVATE DEFINTIONS *************************/
-
-
-/* Buf mask */
-#define __BUF_MASK (UART_RING_BUFSIZE-1)
-/* Check buf is full or not */
-#define __BUF_IS_FULL(head, tail) ((tail&__BUF_MASK)==((head+1)&__BUF_MASK))
-/* Check buf will be full in next receiving or not */
-#define __BUF_WILL_FULL(head, tail) ((tail&__BUF_MASK)==((head+2)&__BUF_MASK))
-/* Check buf is empty */
-#define __BUF_IS_EMPTY(head, tail) ((head&__BUF_MASK)==(tail&__BUF_MASK))
-/* Reset buf */
-#define __BUF_RESET(bufidx)	(bufidx=0)
-#define __BUF_INCR(bufidx)	(bufidx=(bufidx+1)&__BUF_MASK)
-
-
-/************************** PRIVATE TYPES *************************/
-
-
-
-
-/************************** PRIVATE VARIABLES *************************/
-// UART Ring buffer
-UART_RING_BUFFER_T rb;
-
-// Current Tx Interrupt enable state
-__IO FlagStatus TxIntStat;
-
 
 /********************************************************************//**
  * @brief 		UART receive function (ring buffer used)
  * @param[in]	None
  * @return 		None
  *********************************************************************/
-void UART_IntReceive(void)
+void UART_IntReceive(uint16_t instance)
 {
 	uint8_t tmpc;
 	uint32_t rLen;
-
+    uint8_t num;
+    if(instance){
+        num = instance - 1;
+    } else {
+        num = instance;
+    }
 	while(1){
 		// Call UART read function in UART driver
-		rLen = UART_Receive((LPC_UART_TypeDef *)LPC_UART0, &tmpc, 1, NONE_BLOCKING);
+        switch(instance)
+        {
+            case HW_UART0:
+                {
+                    rLen = UART_Receive((LPC_UART_TypeDef *)LPC_UART0, &tmpc, 1, NONE_BLOCKING);
+                    break;
+                }
+            case HW_UART3:
+                {
+                    rLen = UART_Receive((LPC_UART_TypeDef *)LPC_UART3, &tmpc, 1, NONE_BLOCKING);
+                    break;
+                }
+        }
 		// If data received
 		if (rLen){
 			/* Check if buffer is more space
 			 * If no more space, remaining character will be trimmed out
 			 */
-			if (!__BUF_IS_FULL(rb.rx_head,rb.rx_tail)){
-				rb.rx[rb.rx_head] = tmpc;
-				__BUF_INCR(rb.rx_head);
+			if (!__BUF_IS_FULL(rb[num].rx_head,rb[num].rx_tail)){
+				rb[num].rx[rb[num].rx_head] = tmpc;
+				__BUF_INCR(rb[num].rx_head);
 			}
 		}
 		// no more data
@@ -286,12 +258,12 @@ void UART_IntTransmit(void)
 	/* Wait until THR empty */
     while (UART_CheckBusy((LPC_UART_TypeDef *)LPC_UART0) == SET);
 
-	while (!__BUF_IS_EMPTY(rb.tx_head,rb.tx_tail))
+	while (!__BUF_IS_EMPTY(rb[0].tx_head,rb[0].tx_tail))
     {
         /* Move a piece of data into the transmit FIFO */
-    	if (UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)&rb.tx[rb.tx_tail], 1, NONE_BLOCKING)){
+    	if (UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)&rb[0].tx[rb[0].tx_tail], 1, NONE_BLOCKING)){
         /* Update transmit ring FIFO tail pointer */
-        __BUF_INCR(rb.tx_tail);
+        __BUF_INCR(rb[0].tx_tail);
     	} else {
     		break;
     	}
@@ -299,7 +271,7 @@ void UART_IntTransmit(void)
 
     /* If there is no more data to send, disable the transmit
        interrupt - else enable it or keep it enabled */
-	if (__BUF_IS_EMPTY(rb.tx_head, rb.tx_tail)) {
+	if (__BUF_IS_EMPTY(rb[0].tx_head, rb[0].tx_tail)) {
     	UART_IntConfig((LPC_UART_TypeDef *)LPC_UART0, UART_INTCFG_THRE, DISABLE);
     	// Reset Tx Interrupt state
     	TxIntStat = RESET;
@@ -321,23 +293,18 @@ void UART_IntErr(uint8_t bLSErrType)
 {
 	while(1);
 }
-/*********************************************************************//**
- * @brief		UART0 interrupt handler sub-routine
- * @param[in]	None
- * @return 		None
- **********************************************************************/
-void UART0_IRQHandler(void)
+static void UART_IRQ_Handler(LPC_UART_TypeDef* instance)
 {
 	uint32_t intsrc, tmp, tmp1;
-
+    
 	/* Determine the interrupt source */
-	intsrc = UART_GetIntId(LPC_UART0);
+	intsrc = UART_GetIntId(instance);
 	tmp = intsrc & UART_IIR_INTID_MASK;
 
 	// Receive Line Status
 	if (tmp == UART_IIR_INTID_RLS){
 		// Check line status
-		tmp1 = UART_GetLineStatus(LPC_UART0);
+		tmp1 = UART_GetLineStatus(instance);
 		// Mask out the Receive Ready and Transmit Holding empty status
 		tmp1 &= (UART_LSR_OE | UART_LSR_PE | UART_LSR_FE \
 				| UART_LSR_BI | UART_LSR_RXFE);
@@ -349,11 +316,26 @@ void UART0_IRQHandler(void)
 
 	// Receive Data Available or Character time-out
 	if ((tmp == UART_IIR_INTID_RDA) || (tmp == UART_IIR_INTID_CTI)){
-			UART_IntReceive();
-	}
+        if(instance == LPC_UART0) UART_IntReceive(HW_UART0);
+        if(instance == LPC_UART3) UART_IntReceive(HW_UART3);
+    }
 
 	// Transmit Holding Empty
 	if (tmp == UART_IIR_INTID_THRE){
 			UART_IntTransmit();
 	}
+}
+/*********************************************************************//**
+ * @brief		UART0 interrupt handler sub-routine
+ * @param[in]	None
+ * @return 		None
+ **********************************************************************/
+void UART0_IRQHandler(void)
+{
+    UART_IRQ_Handler(LPC_UART0);
+}
+
+void UART3_IRQHandler(void)
+{
+    UART_IRQ_Handler(LPC_UART3);
 }

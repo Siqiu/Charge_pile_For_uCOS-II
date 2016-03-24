@@ -102,6 +102,7 @@
 #include "Module_protocol.h"
 #include "Module_timer.h"
 #include "datstr.h"
+#include "debug_frmwrk.h"
 /*
 *********************************************************************************************************
 *                                                 TCP-IP

@@ -20,7 +20,7 @@
         
         
       <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1026</ColumnWidth1><ColumnWidth2>273</ColumnWidth2><ColumnWidth3>68</ColumnWidth3></Build>
-    <Find-in-Files><ColumnWidth0>492</ColumnWidth0><ColumnWidth1>82</ColumnWidth1><ColumnWidth2>738</ColumnWidth2><ColumnWidth3>328</ColumnWidth3></Find-in-Files><Select-Ambiguous-Definitions><ColumnWidth0>574</ColumnWidth0><ColumnWidth1>82</ColumnWidth1><ColumnWidth2>984</ColumnWidth2></Select-Ambiguous-Definitions><TerminalIO/></Static>
+    <Find-in-Files><ColumnWidth0>492</ColumnWidth0><ColumnWidth1>82</ColumnWidth1><ColumnWidth2>738</ColumnWidth2><ColumnWidth3>328</ColumnWidth3></Find-in-Files><Select-Ambiguous-Definitions><ColumnWidth0>574</ColumnWidth0><ColumnWidth1>82</ColumnWidth1><ColumnWidth2>984</ColumnWidth2></Select-Ambiguous-Definitions><TerminalIO/><Debug-Log><ColumnWidth0>21</ColumnWidth0><ColumnWidth1>1602</ColumnWidth1></Debug-Log></Static>
     <Windows>
       
       
@@ -44,7 +44,7 @@
             <Factory>Build</Factory>
             <Session/>
           </Tab>
-        <Tab><Identity>TabID-31793-18222</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-2935-19786</Identity><TabName>Ambiguous Definitions</TabName><Factory>Select-Ambiguous-Definitions</Factory><Session/></Tab></Tabs>
+        <Tab><Identity>TabID-31793-18222</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-2935-19786</Identity><TabName>Ambiguous Definitions</TabName><Factory>Select-Ambiguous-Definitions</Factory><Session/></Tab><Tab><Identity>TabID-11356-7467</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
         
       <SelectedTab>0</SelectedTab></Wnd3></Windows>
     <Editor>
@@ -52,14 +52,14 @@
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>159</YPos2><SelStart2>6488</SelStart2><SelEnd2>6488</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>68</YPos2><SelStart2>963</SelStart2><SelEnd2>969</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_RFID.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>29</YPos2><SelStart2>803</SelStart2><SelEnd2>803</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_RFID.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>16</YPos2><SelStart2>2131</SelStart2><SelEnd2>2142</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\uCOS-Config\includes.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>35</YPos2><SelStart2>2343</SelStart2><SelEnd2>2343</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\uCOS-Config\app_cfg.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>68</YPos2><SelStart2>3568</SelStart2><SelEnd2>3568</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>301</YPos2><SelStart2>10672</SelStart2><SelEnd2>10672</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_RFID.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>100</YPos2><SelStart2>5294</SelStart2><SelEnd2>5294</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_RFID.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>40</YPos2><SelStart2>2010</SelStart2><SelEnd2>2010</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\..\..\..\Software\Donatello\Module_timer.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>18</YPos2><SelStart2>939</SelStart2><SelEnd2>939</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-00ED9A88><key>iaridepm.enu1</key></Toolbar-00ED9A88></Sizes></Row0><Row1><Sizes/></Row1></Top><Left><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>721</Bottom><Right>292</Right><x>-2</x><y>-2</y><xscreen>233</xscreen><yscreen>226</yscreen><sizeHorzCX>140193</sizeHorzCX><sizeHorzCY>228283</sizeHorzCY><sizeVertCX>176895</sizeVertCX><sizeVertCY>730303</sizeVertCY></Rect></Wnd1></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>224</Bottom><Right>1664</Right><x>-2</x><y>-2</y><xscreen>1666</xscreen><yscreen>226</yscreen><sizeHorzCX>1002407</sizeHorzCX><sizeHorzCY>228283</sizeHorzCY><sizeVertCX>140193</sizeVertCX><sizeVertCY>228283</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-010A9A88><key>iaridepm.enu1</key></Toolbar-010A9A88></Sizes></Row0><Row1><Sizes/></Row1></Top><Left><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>691</Bottom><Right>292</Right><x>-2</x><y>-2</y><xscreen>233</xscreen><yscreen>226</yscreen><sizeHorzCX>129014</sizeHorzCX><sizeHorzCY>240938</sizeHorzCY><sizeVertCX>162791</sizeVertCX><sizeVertCY>738806</sizeVertCY></Rect></Wnd1></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>202</Bottom><Right>1808</Right><x>-2</x><y>-2</y><xscreen>1810</xscreen><yscreen>204</yscreen><sizeHorzCX>1002215</sizeHorzCX><sizeHorzCY>217484</sizeHorzCY><sizeVertCX>129014</sizeVertCX><sizeVertCY>240938</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

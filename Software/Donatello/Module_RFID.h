@@ -11,6 +11,7 @@
 #define   __MODULE_RFID_H__
 
 #include "Module_crc.h"
+#include "includes.h"
 
 /* Exported valable -------------------------------------------------------- */
 typedef enum {
@@ -35,6 +36,17 @@ typedef enum {
 	OP_CMDERR             /* (42) Commend error */
 } RFID_ERRNUM;
 
+typedef struct {
+    uint16_t Card_type;//卡类型
+    uint8_t  Snr1[4];//第一次刷的卡片系列号
+    uint8_t  Snr2[4];//第二次刷的卡片系列号
+    uint8_t  Card_SC;//storage capacity
+    uint8_t  Data_block1[16];//普通卡
+    uint8_t  Data_block2[16];//管理员卡
+    uint8_t  HWVersion[18];
+} RFID_STRUCT;
+#define RFID_STRUCT_SIZE    sizeof(RFID_STRUCT)
+
 //typedef enum {
 #define Cmd_R_HWVersion 0x4F /* (1) Read hardware version */
 #define Cmd_Load_Key    0x4C /* (2) Download password to card reader */
@@ -50,7 +62,9 @@ typedef enum {
     //Cmd_Transfer    = 0x4B  /* (12) Money operation */
 //} RFID_DATATYPE;
 /* Public functions ---------------------------------------------------------*/
-//void RFID_Send(RFID_DATATYPE cmd);
+void RFID_Send(uint8_t cmd, uint8_t* buf1, uint8_t* buf2, uint8_t data);
+
+RFID_ERRNUM CheckPack_RFID(void);
 /* private functions---------------------------------------------------------*/
 
 #endif	/* __MODULE_RFID_H__ */

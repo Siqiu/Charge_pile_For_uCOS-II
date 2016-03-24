@@ -110,10 +110,12 @@ void UART_Puts(LPC_UART_TypeDef *UARTx, const uint8_t *str, uint16_t len)
 	while (len--)
 	{
 		UARTPutChar(UARTx, *str++);
+        Delay(5);
 	}
-    Delay(30);
-    //OSTimeDlyHMSM(0, 0, 0, 30);
-    if(UARTx==LPC_UART0) RECV_485;
+    if(UARTx==LPC_UART0){
+        Delay(30);
+        RECV_485;
+    }
 }
 
 /*********************************************************************//**

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<userOverrides>
+  <override>
+    <path>E:\work\GitHub\Template_For_uCOS-II_iar_LPC176x\EvalBoards\NXP\LPC1768-SK\uCOS-II\main.c</path>
+    <encoding>System</encoding>
+  </override>
+</userOverrides>
+
+

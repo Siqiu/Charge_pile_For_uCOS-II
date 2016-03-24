@@ -68,6 +68,8 @@
  */
 static void Task_Start(void *pdata);
 extern CAN_MSG_Type TXMsg, RXMsg; // messages for test Bypass mode
+extern RFID_STRUCT Rfid;
+extern uint8_t Uart2_Errnum;
 /************************** PRIVATE VARIABLES *************************/
 uint8_t menu1[] =
 "********************************************************************************\n\r"
@@ -85,7 +87,7 @@ uint16_t timer_cnt = 0;
 
 /*
 *********************************************************************************************************
-*                                       å£°æ˜ä»»åŠ¡å †æ ˆ
+*                                       ÉùÃ÷ÈÎÎñ¶ÑÕ»
 *********************************************************************************************************
 */
 OS_STK  STK_START[TASK_0_STK_SIZE];
@@ -95,11 +97,11 @@ OS_STK  STK_APP_02[TASK_2_STK_SIZE];
 OS_STK  STK_APP_03[TASK_3_STK_SIZE];
 OS_STK  STK_APP_04[TASK_4_STK_SIZE];
 /*******************************************************************************
-  * @å‡½æ•°åç§°		Task_MBOX
-  * @å‡½æ•°è¯´æ˜		å–‚çœ‹é—¨ç‹—å’Œè§£ææ•°æ®
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
+  * @º¯ÊıÃû³Æ		Task_MBOX
+  * @º¯ÊıËµÃ÷		Î¹¿´ÃÅ¹·ºÍ½âÎöÊı¾İ
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
 *******************************************************************************/
 void Task_APP_01(void *pdata)
 {
@@ -120,7 +122,7 @@ void Task_APP_01(void *pdata)
         UardDmaFlow();
         
 
-        OSTimeDlyHMSM(0, 0, 0, 10);
+        OSTimeDlyHMSM(0, 0, 0, 1);
     }
 }
 /*
@@ -135,19 +137,110 @@ void Task_APP_01(void *pdata)
 *********************************************************************************************************
 */
 /*******************************************************************************
-  * @å‡½æ•°åç§°		Task_APP_02
-  * @å‡½æ•°è¯´æ˜		SHELL
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
+  * @º¯ÊıÃû³Æ		Task_APP_02
+  * @º¯ÊıËµÃ÷		SHELL
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
 *******************************************************************************/
 void Task_APP_02(void *pdata)
 {
-
+    uint8_t buf1[22] = {0X8A, 0XE7, 0X91, 0X7C, 0X82, 0X9F, 0X00, 0X00, 0X8A, 0XE7, 0X91, 0X7C, 0X82, 0X9F};
+    //uint8_t Master_Card[16]  = {0x24,0x23,0x22,0x21,0xdb,0xdc,0xdd,0xde,0x24,0x23,0x22,0x21,0x0d,0xf2,0x0d,0xf2};
+    uint8_t Master_Card[16]  = {0xfe,0xff,0xff,0xff,0x01,0x00,0x00,0x00,0xfe,0xff,0xff,0xff,0x0c,0xf3,0x0c,0xf3};
+    uint8_t lock[16] = {0X00, 0X00, 0X00, 0X00, 0xff,0xff,0xff,0xff,0x00,0x00,0x00,0x00,0x0e,0xf1,0x0e,0xf1};
+    uint8_t unlock[16] = {0X01, 0X01, 0X01, 0X01, 0xfe,0xfe,0xfe,0xfe,0x01,0x01,0x01,0x01,0x0e,0xf1,0x0e,0xf1};
+    RFID_Send(Cmd_Load_Key, buf1, buf1, 0x03);//ok
     pdata=pdata;
+    num = 120;
     for(;;)
     {
-#if 0//test DLT
+        if(num == 6){
+            num -= 6;
+            RFID_Send(Cmd_R_HWVersion, NULL, NULL, NULL);//ok
+        }
+        RFID_Send(Cmd_Request, NULL, NULL, NULL);//Ñ°¿¨ok
+        OSTimeDlyHMSM(0, 0, 0, num) ;//ÑÓ³Ùrelease Ê±ĞèÒª¼Ó³¤
+        if(!Rfid.Card_type)continue;
+        RFID_Send(Cmd_Anticoll, NULL, NULL, NULL);//·À³åÍ»ok
+        OSTimeDlyHMSM(0, 0, 0, num);
+        RFID_Send(Cmd_Select, Rfid.Snr1, NULL, NULL);//Ñ¡Ôñ¿¨Æ¬ok
+        OSTimeDlyHMSM(0, 0, 0, num);
+        RFID_Send(Cmd_Authentic, NULL, NULL, 0x03);//ÉÈÇø Ğ£ÑéÃÜÂëok
+        OSTimeDlyHMSM(0, 0, 0, num);
+        
+        if((!memcmp(Rfid.Snr1,Rfid.Snr2,4)) && Rfid.Snr1[0] && Rfid.Snr2[0]){
+            //µÚ¶ş´ÎË¢¿¨
+            LED_Clear();
+            if(!memcmp(Rfid.Data_block1,Master_Card,16)){//ÅĞ¶ÏÊÇ·ñÊÇ¹ÜÀíÔ±¿¨
+                RFID_Send(Cmd_W_Block, unlock, NULL, 3*4+2);
+            }
+            memset(&Rfid,0,RFID_STRUCT_SIZE);
+            continue;
+            //LED_Blue();
+        }
+            
+        RFID_Send(Cmd_R_Block, NULL, NULL, 3*4+1);
+        OSTimeDlyHMSM(0, 0, 0, num);
+
+        if(Rfid.Data_block1[4] != 0){//ÅĞ¶ÏÊÇµÚ¼¸´ÎË¢¿¨
+            if(memcmp(Rfid.Snr1,Rfid.Snr2,4) && (Rfid.Snr2[3] != 0xFF)){
+                //µÚÒ»´ÎË¢¿¨
+                LED_Red();
+                Rfid.Snr2[3] = 0xFF;
+                if(!memcmp(Rfid.Data_block1,Master_Card,16)){//ÅĞ¶ÏÊÇ·ñÊÇ¹ÜÀíÔ±¿¨
+                }else if(!Rfid.Data_block1[0]){//ÅĞ¶ÏÊÇÎ´Ëø¶¨
+                    //Î´Ëø¶¨
+                    RFID_Send(Cmd_W_Block, lock, NULL, 3*4+2);
+                }
+            }
+        }
+
+//        if(num == 14){
+//            num -= 14;            
+//            RFID_Send(Cmd_A_Money, NULL, NULL, NULL);
+//        }
+//        if(num == 15){
+//            num -= 15;
+//            RFID_Send(Cmd_L_Money, NULL, NULL, NULL);
+//        }
+//        OSTimeDlyHMSM(0, 0, 1, 0);
+    }
+}
+
+/*******************************************************************************
+  * @º¯ÊıÃû³Æ		Task_APP_03
+  * @º¯ÊıËµÃ÷		³äµç»ú³äµç×®·¢ËÍÈÎÎñ
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
+*******************************************************************************/
+//int sumi(int c, ...)
+//{
+//    va_list argptr;
+//    va_start(argptr, c); //³õÊ¼»¯±äÔªÖ¸Õë
+//    int sum = c;
+//    c = va_arg(argptr, int); //×÷ÎªÏÂÒ»¸ö²ÎÊıÀàĞÍµÄ²ÎÊıÀàĞÍ£¬·µ»Ø²»¶¨²ÎÊı
+//    //c±£´æµÚÒ»¸ö²»¶¨²ÎÊı
+//    printf("%d\n", c);
+//    while(0 != c) //Ä©Î²ÌØ¶¨×Ö·ûÖ¸Ê¾½áÊø
+//    {
+//        sum = sum + c;
+//        c = va_arg(argptr, int);
+//    }
+//    va_end(argptr);
+//    return sum;
+//}
+void Task_APP_03(void *pdata)
+{
+    pdata = pdata;
+
+    OSStatInit();                   											/* Í³¼ÆÈÎÎñ³õÊ¼»¯ */
+
+    for(;;)
+    {
+//        sumi(1,2,3,4,5);
+#if 1//test DLT
         if(num == 1){
             num -= 1;
             ReadData(DLT_Vol);
@@ -174,64 +267,16 @@ void Task_APP_02(void *pdata)
             OSTimeDlyHMSM(0, 0, 2, 0);
         }
 #endif
-        //UARTPuts (LPC_UART3, menu1);
-        uint8_t buf1[8] = {0x01, 0x14, 0x8a, 0xc5, 0xe2, 0x28, 0x28, 0x00};
-        uint8_t buf2[8] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x40};
-        RFID_Send(Cmd_Load_Key, &buf1, &buf2);
-//        printf("%d\n",timer_cnt);
-
-//        FIO_ByteSetValue(2, 0, P02_06);
-//        OSTimeDlyHMSM(0, 0, 0, 500);
-//        FIO_ByteClearValue(2, 0, P02_06);
-//        OSTimeDlyHMSM(0, 0, 0, 500);
-        
-
-        OSTimeDlyHMSM(0, 0, 1, 0);
-    }
-}
-
-/*******************************************************************************
-  * @å‡½æ•°åç§°		Task_APP_03
-  * @å‡½æ•°è¯´æ˜		å……ç”µæœºå……ç”µæ¡©å‘é€ä»»åŠ¡
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
-*******************************************************************************/
-//int sumi(int c, ...)
-//{
-//    va_list argptr;
-//    va_start(argptr, c); //åˆå§‹åŒ–å˜å…ƒæŒ‡é’ˆ
-//    int sum = c;
-//    c = va_arg(argptr, int); //ä½œä¸ºä¸‹ä¸€ä¸ªå‚æ•°ç±»å‹çš„å‚æ•°ç±»å‹ï¼Œè¿”å›ä¸å®šå‚æ•°
-//    //cä¿å­˜ç¬¬ä¸€ä¸ªä¸å®šå‚æ•°
-//    printf("%d\n", c);
-//    while(0 != c) //æœ«å°¾ç‰¹å®šå­—ç¬¦æŒ‡ç¤ºç»“æŸ
-//    {
-//        sum = sum + c;
-//        c = va_arg(argptr, int);
-//    }
-//    va_end(argptr);
-//    return sum;
-//}
-void Task_APP_03(void *pdata)
-{
-    pdata = pdata;
-
-    OSStatInit();                   											/* ç»Ÿè®¡ä»»åŠ¡åˆå§‹åŒ– */
-
-    for(;;)
-    {
-//        sumi(1,2,3,4,5);
         OSTimeDlyHMSM(0, 0, 2, 0);
     }
 }
 
 /*******************************************************************************
-  * @å‡½æ•°åç§°		Task_APP_04
-  * @å‡½æ•°è¯´æ˜		æ— 
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
+  * @º¯ÊıÃû³Æ		Task_APP_04
+  * @º¯ÊıËµÃ÷		ÎŞ
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
 *******************************************************************************/
 void Task_APP_04(void *pdata)
 {
@@ -243,23 +288,21 @@ void Task_APP_04(void *pdata)
 //        UARTPuts (LPC_UART2, menu1);
 //        UARTPuts (LPC_UART3, menu1);
 
-        LED_Red();
-        printf("%d\n",timer_cnt);
-        OSTimeDlyHMSM(0, 0, 1, 0);
-        printf("%d\n",timer_cnt);
-        LED_Green();
-        OSTimeDlyHMSM(0, 0, 1, 0);
-        LED_Blue();
-        OSTimeDlyHMSM(0, 0, 1, 0);
+//        LED_Red();
+//        OSTimeDlyHMSM(0, 0, 1, 0);
+//        LED_Green();
+//        OSTimeDlyHMSM(0, 0, 1, 0);
+//        LED_Blue();
+//        OSTimeDlyHMSM(0, 0, 1, 0);
     }
 }
 
 /*******************************************************************************
-  * @å‡½æ•°åç§°		Task_Family_Energy_Storage
-  * @å‡½æ•°è¯´æ˜		å®¶åº­å‚¨èƒ½2.5Â°ç”µé¡¹ç›®
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
+  * @º¯ÊıÃû³Æ		Task_Family_Energy_Storage
+  * @º¯ÊıËµÃ÷		¼ÒÍ¥´¢ÄÜ2.5¡ãµçÏîÄ¿
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
 *******************************************************************************/
 void Task_Family_Energy_Storage(void *pdata)
 {
@@ -271,10 +314,9 @@ void Task_Family_Energy_Storage(void *pdata)
 }
 
 
-uint16_t Uart0_Inter = 0;
 int  main (void)
 {
-    //CPU_Init();
+    //CPU_Init();  
 
     //BSP_Init();                                                 /* Initialize BSP functions                             */
     bsp_init();
@@ -290,11 +332,11 @@ int  main (void)
     return(1);
 }
 /*******************************************************************************
-  * @å‡½æ•°åç§°		AppStartTask
-  * @å‡½æ•°è¯´æ˜		èµ·å§‹ä»»åŠ¡ï¼Œåˆ›å»ºå®Œå…¶ä»–ä»»åŠ¡åï¼Œè‡ªèº«æŒ‚èµ·
-  * @è¾“å…¥å‚æ•°		æ— 
-  * @è¾“å‡ºå‚æ•°		æ— 
-  * @è¿”å›å‚æ•°		æ— 
+  * @º¯ÊıÃû³Æ		AppStartTask
+  * @º¯ÊıËµÃ÷		ÆğÊ¼ÈÎÎñ£¬´´½¨ÍêÆäËûÈÎÎñºó£¬×ÔÉí¹ÒÆğ
+  * @ÊäÈë²ÎÊı		ÎŞ
+  * @Êä³ö²ÎÊı		ÎŞ
+  * @·µ»Ø²ÎÊı		ÎŞ
 *******************************************************************************/
 static void Task_Start(void *pdata)
 {
@@ -306,7 +348,7 @@ static void Task_Start(void *pdata)
     pdata = pdata;
     BSP_Start();                                                /* Start BSP and tick initialization                    */
 
-    uint8_t	err;                                                                //é”™è¯¯ä¿¡æ¯
+    uint8_t	err;                                                                //´íÎóĞÅÏ¢
 #if 1
     OSTaskCreate(Task_APP_01,(void *)0,
                  &STK_APP_01[TASK_1_STK_SIZE-1],
@@ -320,7 +362,7 @@ static void Task_Start(void *pdata)
     OSTaskNameSet(PRIO_APP_02, (uint8_t*)"SHEEL",&err);
 #endif
 #if 1
-    //å……ç”µæœºå……ç”µæ¡©å‘é€ä»»åŠ¡
+    //³äµç»ú³äµç×®·¢ËÍÈÎÎñ
     OSTaskCreate(Task_APP_03,(void *)0,
                  &STK_APP_03[TASK_3_STK_SIZE-1],
                  PRIO_APP_03);
@@ -332,7 +374,7 @@ static void Task_Start(void *pdata)
                  PRIO_APP_04);
     OSTaskNameSet(PRIO_APP_04, (uint8_t*)"Time_to_one",&err);
 #endif
-    //æŒ‚èµ·èµ·å§‹ä»»åŠ¡.
+    //¹ÒÆğÆğÊ¼ÈÎÎñ.
     OSTaskSuspend(PRIO_START);
     OS_EXIT_CRITICAL();
 }

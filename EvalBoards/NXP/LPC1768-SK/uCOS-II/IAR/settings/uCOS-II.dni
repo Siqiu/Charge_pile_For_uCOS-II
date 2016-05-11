@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=184792848
+Checksum=1672663059
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -116,7 +116,11 @@ Exclusions=
 mode=0
 [Breakpoints2]
 Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\BSP\IAR\startup_LPC17xx.s}.144.1" 0 0 1 "" 0 "" 0
-Count=1
+Bp1=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c}.94.9" 0 0 1 "" 0 "" 0
+Bp2=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c}.99.9" 0 0 1 "" 0 "" 0
+Bp3=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_Protocol.c}.103.12" 0 0 1 "" 0 "" 0
+Bp4=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\..\Software\Donatello\Module_uart.c}.353.5" 0 0 1 "" 0 "" 0
+Count=5
 [Aliases]
 A0=_ "E:\BMS\±¦Âí\Micrium\Software\uCOS-II\Ports\ARM-Cortex-M3\Generic\IAR\os_cpu_a.asm" ""
 A1=_ "E:\BMS\±¦Âí\Micrium\Software\uCOS-II\Ports\ARM-Cortex-M3\Generic\IAR\os_cpu_c.c" ""

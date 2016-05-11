@@ -171,6 +171,8 @@ void UART2_Init(uint32_t BPS)
 
 	// Enable UART Transmit
 	UART_TxCmd((LPC_UART_TypeDef *)LPC_UART2, ENABLE);
+    NVIC_EnableIRQ(UART2_IRQn);                     /* 在NVIC中使能中断             */  
+    LPC_UART2->IER = 0x01;                          /* 使能接收中断                 */
 }
 
 
@@ -218,6 +220,11 @@ void UART_IntReceive(uint16_t instance)
             case HW_UART0:
                 {
                     rLen = UART_Receive((LPC_UART_TypeDef *)LPC_UART0, &tmpc, 1, NONE_BLOCKING);
+                    break;
+                }
+            case HW_UART2:
+                {
+                    rLen = UART_Receive((LPC_UART_TypeDef *)LPC_UART2, &tmpc, 1, NONE_BLOCKING);
                     break;
                 }
             case HW_UART3:
@@ -317,6 +324,7 @@ static void UART_IRQ_Handler(LPC_UART_TypeDef* instance)
 	// Receive Data Available or Character time-out
 	if ((tmp == UART_IIR_INTID_RDA) || (tmp == UART_IIR_INTID_CTI)){
         if(instance == LPC_UART0) UART_IntReceive(HW_UART0);
+        if(instance == LPC_UART2) UART_IntReceive(HW_UART2);
         if(instance == LPC_UART3) UART_IntReceive(HW_UART3);
     }
 
@@ -333,6 +341,11 @@ static void UART_IRQ_Handler(LPC_UART_TypeDef* instance)
 void UART0_IRQHandler(void)
 {
     UART_IRQ_Handler(LPC_UART0);
+}
+
+void UART2_IRQHandler(void)
+{
+    UART_IRQ_Handler(LPC_UART2);
 }
 
 void UART3_IRQHandler(void)

@@ -58,7 +58,7 @@ void bsp_init(void)
     CAN1_Init(20000);
     TIMER_Init(100);
     UART0_Init(9600);                                    /* wzx 485 */
-    UART2_Init(9600);                                    /* wzx DWIN */
+    UART2_Init(115200);                                    /* wzx DWIN */
     UART3_Init(9600);                                    /* wzx CARD */
     RECV_485;
 }

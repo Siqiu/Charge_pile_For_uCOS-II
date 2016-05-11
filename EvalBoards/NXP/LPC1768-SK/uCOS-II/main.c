@@ -122,7 +122,7 @@ void Task_APP_01(void *pdata)
         UardDmaFlow();
         
 
-        OSTimeDlyHMSM(0, 0, 0, 1);
+        OSTimeDlyHMSM(0, 0, 0, 10);
     }
 }
 /*
@@ -155,8 +155,10 @@ void Task_APP_02(void *pdata)
     num = 120;
     for(;;)
     {
+        
         if(num == 6){
             num -= 6;
+            UART_Puts (LPC_UART2, unlock, 16);
             RFID_Send(Cmd_R_HWVersion, NULL, NULL, NULL);//ok
         }
         RFID_Send(Cmd_Request, NULL, NULL, NULL);//Ñ°¿¨ok
